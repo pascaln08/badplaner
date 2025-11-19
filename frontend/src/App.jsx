@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import BathroomScene from "./BathroomScene";
 import "./App.css";
 
@@ -70,9 +70,6 @@ function App() {
         material: "Neutral",
     });
     const [activeView, setActiveView] = useState(viewModes[0]);
-    const [gridEnabled, setGridEnabled] = useState(true);
-
-    const sceneRef = useRef(null);
 
     const handleRoomChange = (field) => (event) => {
         const value = parseFloat(event.target.value) || 0;
@@ -104,29 +101,6 @@ function App() {
         ],
         [],
     );
-
-    const handleToolbarAction = async (action) => {
-        switch (action) {
-            case "toggle-grid":
-                setGridEnabled((prev) => !prev);
-                break;
-            case "capture": {
-                const dataUrl = sceneRef.current?.capture?.();
-                if (!dataUrl) return;
-                const link = document.createElement("a");
-                link.href = dataUrl;
-                link.download = "badplanung.png";
-                link.click();
-                break;
-            }
-            case "undo":
-            case "redo":
-            case "add-openings":
-            default:
-                // placeholders for future interactions
-                break;
-        }
-    };
 
     return (
         <div className="app-shell">
@@ -170,11 +144,7 @@ function App() {
                 </div>
                 <div className="toolbar">
                     {toolbarButtons.map((button) => (
-                        <button
-                            key={button.action}
-                            className="ghost-button"
-                            onClick={() => handleToolbarAction(button.action)}
-                        >
+                        <button key={button.action} className="ghost-button">
                             {button.label}
                         </button>
                     ))}
@@ -241,18 +211,15 @@ function App() {
                             <h2>3D-Renderer</h2>
                         </div>
                         <div className="status-pills">
-                            <span className="status">{activeView}</span>
-                            <span className="status subtle">Raster {gridEnabled ? "an" : "aus"}</span>
+                            <span className="status">OrbitControls aktiv</span>
+                            <span className="status subtle">Walk Mode optional</span>
                         </div>
                     </div>
                     <div className="renderer-shell">
                         <BathroomScene
-                            ref={sceneRef}
                             roomWidth={room.width}
                             roomDepth={room.depth}
                             roomHeight={room.height}
-                            viewMode={activeView}
-                            showGrid={gridEnabled}
                         />
                     </div>
                 </section>
